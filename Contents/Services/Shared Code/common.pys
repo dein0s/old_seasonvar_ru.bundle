@@ -1,0 +1,97 @@
+# -*- coding: utf-8 -*-
+
+import urllib
+
+PREFIX = '/video/seasonvar_ru'
+API_URL = 'http://api.seasonvar.ru/'
+SEASONVAR_URL = 'http://seasonvar.ru/'
+
+
+####################################################################################
+# TITLES
+####################################################################################
+TITLE = u'Сериалы SEASONVAR'
+LATEST_UPDATES = u'Последние обновления'
+ABC_SELECT_RU = u'По алфавиту РУ'
+ABC_SELECT_EN = u'По алфавиту АНГ'
+SEARCH = u'Поиск'
+SEARCH_PROMT = u'Что ищем?'
+BOOKMARKS = u'Закладки'
+
+GET_METADATA = '/get_metadata'
+PLEX_SERVER_ = 'http://127.0.0.1:32400'
+
+
+class MetaUrl(str):
+    item = None
+    season = None
+    translate = None
+    episode = None
+
+    def update(self, item, season_id, translate, episode):
+        self.season_id = season_id
+        self.item = item
+        self.translate = unicode(translate)
+        self.episode = episode
+        return self
+
+
+def init_meta_url(url):
+    try:
+        if url.item:
+            return url
+
+    except:
+        url_res = url.replace('%7C%7C', '||').split('||')
+        episode = url_res.pop()
+        translate = unicode(url_res.pop())
+        season_id = url_res.pop()
+        new_url = MetaUrl(url)
+
+        try:
+            item = JSON.ObjectFromString(
+                urllib.urlopen(
+                    '%s%s%s?%s' % (
+                        PLEX_SERVER_,
+                        PREFIX,
+                        GET_METADATA,
+                        urllib.urlencode(
+                            {
+                                'season_id': season_id
+                            }
+                        )
+                    )
+                ).read()
+            )
+
+            if item:
+                return new_url.update(item, season_id, translate, episode)
+
+        except Exception as e:
+            Log.Error(u'%s' % e)
+            pass
+
+        finally:
+            Log('init_meta_url: %s' % url)
+
+    raise Ex.MediaNotAvailable
+
+
+def get_video_object(item, season_id, translate, episode):
+    url = MetaUrl('%s||%s||%s||%s' % (SEASONVAR_URL, season_id, unicode(translate), episode))
+    url.update(item, season_id, translate, episode)
+
+    return URLService.MetadataObjectForURL(url)
+
+
+def get_episode_url(url):
+    if '_dummy_' in url:
+        return url
+    else:
+        item = url.item
+        translate_playlist = url.item['playlist'][url.translate]
+        for translate_episode in translate_playlist:
+            if int(translate_episode.get('id')) != int(url.episode):
+                continue
+            else:
+                return translate_episode['link']

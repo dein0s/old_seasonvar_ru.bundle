@@ -1,0 +1,57 @@
+import common as COMMON
+
+
+def MediaObjectsForURL(url):
+    url = COMMON.init_meta_url(url)
+    media_items = [MediaObject(
+        parts=[
+            PartObject(
+                key=Callback(
+                    PlayVideo,
+                    url=COMMON.get_episode_url(url)
+                )
+            )
+        ],
+        container=Container.MP4,
+        video_codec=VideoCodec.H264,
+        video_resolution='544',
+        audio_codec=AudioCodec.AAC,
+        audio_channels=2,
+        optimized_for_streaming=True
+    )]
+
+    return media_items
+
+
+def MetadataObjectForURL(url):
+    url = COMMON.init_meta_url(url)
+    item = url.item
+    episode = url.episode
+    translate = url.translate
+    season = url.season
+
+    episode_object = EpisodeObject(
+        rating_key=COMMON.get_episode_url(url),
+        title=u'%s%s' % (
+            url.episode,
+            '' if translate == 'no_translate' else u' (%s)' % translate
+        ),
+        season=int(item['season']),
+        index=int(episode),
+        show=unicode(item['title']),
+        source_title=COMMON.SEASONVAR_URL,
+        summary=unicode(item.get('summary')),
+        thumb=unicode(item.get('thumb_l')),
+        rating=item.get('rating')
+        # **kwargs
+    )
+
+    return episode_object
+
+
+@indirect
+def PlayVideo(url, **kwargs):
+    # url = COMMON.init_meta_url(url)
+    # link = COMMON.get_episode_url(url)
+    return IndirectResponse(VideoClipObject, key=url)
+    # return Redirect(link)

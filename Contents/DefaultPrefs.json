@@ -1,0 +1,22 @@
+[
+  {
+    "id": "api_key",
+    "label": "Seasonvar API Key",
+    "option": "hidden",
+    "type": "text",
+    "default": ""
+  },
+  {
+    "id": "login",
+    "label": "Seasonvar Web Login",
+    "type": "text",
+    "default": ""
+  },
+  {
+    "id": "password",
+    "label": "Seasonvar Web Password",
+    "option": "hidden",
+    "type": "text",
+    "default": ""
+  }
+]
