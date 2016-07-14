@@ -7,7 +7,7 @@
         <key>CFBundleIdentifier</key>
             <string>com.plexapp.plugins.seasonvar_ru</string>
         <key>CFBundleVersion</key>
-            <string>1.1</string>
+            <string>0.1a</string>
         <key>PlexFrameworkVersion</key>
             <string>2</string>
         <key>PlexClientPlatforms</key>
